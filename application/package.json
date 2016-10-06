@@ -1,0 +1,16 @@
+{
+  "name": "location-by-ip-service",
+  "version": "0.1.0",
+  "engines": {
+    "node": "6.6.0",
+    "npm": "3.10.3"
+  },
+  "private": true,
+  "scripts": {
+    "start": "NODE_REPL_ASSIGN_UNDERSCORE=false node ./bin/www",
+    "test": "echo 'not supported'"
+  },
+  "dependencies": {
+    "express": "4.14.0"
+  }
+}
