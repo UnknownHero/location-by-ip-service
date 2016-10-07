@@ -1,4 +1,5 @@
-var express = require('express');
+const express = require('express');
+const geoip = require('geoip-lite');
 
 class Index {
 
@@ -34,7 +35,8 @@ class Index {
     const ip = request.query.ip || null;
 
     if (this._isValidAccessToken(accessToken)) {
-      response.send("Not implemented! Ip: " + ip);
+      let geoInfo = geoip.lookup(ip);
+      this._sendResult(geoInfo,response);
     }else{
       response.sendStatus(401);
     }
@@ -54,6 +56,31 @@ class Index {
     });
   }
 
+  _sendResult(geoInfo, response) {
+    let formattedResult = this._formatResult(geoInfo);
+    response.statusCode = formattedResult.code;
+    response.json(formattedResult);
+  }
+
+  _formatResult(data){
+    let resultObject;
+    if(!data){
+      resultObject = this._getResponseObject(404 , {}, "No one country find", false)
+    }else{
+      resultObject = this._getResponseObject(200 , data, "", true)
+    }
+
+    return resultObject;
+  }
+
+  _getResponseObject(code,data,message,result){
+    return {
+      result: result,
+      message: message,
+      code: code,
+      data: data
+    }
+  }
 }
 
 const indexServer = new Index();
