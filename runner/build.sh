@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-cd .. && docker build  -t country-by-ip-service:local-latest .
+. ./settings.sh
+
+cd .. && docker build  -t $IMAGE_NAME:$IMAGE_TAG . && cd runner
