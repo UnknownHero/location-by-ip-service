@@ -1,51 +1,58 @@
 var express = require('express');
 
-class Index{
+class Index {
 
-  run(){
-    const expressApplication = this.createApplication();
-    const config = this.getConfig();
-    this.setupRouters(expressApplication, config);
-    this.runExpressApplication(expressApplication, config);
+  constructor() {
+    this.expressApplication = this.createApplication();
+    this.config = this.getConfig();
   }
 
-  getConfig(){
+  run() {
+    this.setupMiddlewares();
+    this.setupRouters();
+    this.runExpressApplication();
+  }
+
+  createApplication() {
+    return express();
+  }
+
+  getConfig() {
     return {
       port: process.env.PORT || 8080,
       accessToken: process.env.ACCESS_TOKEN || "ufeiuqfwcn23233me_f2",
     }
   }
 
-  createApplication(){
-    const expressApplication = express();
-    return expressApplication;
-  }
-
   setupRouters(expressApplication, config) {
-    expressApplication.get('/location', this.locationRouteHandler);
+    this.expressApplication.get('/location', this.locationRouteHandler.bind(this));
   }
 
-  locationRouteHandler(req, res) {
+  locationRouteHandler(request, response) {
 
-    const accessToken = req.query.accessToken || null;
-    const ip = req.query.ip || null;
+    const accessToken = request.query.accessToken || null;
+    const ip = request.query.ip || null;
 
-    if(this._isValidAccessToken(accessToken,config)){
-      res.send("Not implemented! Ip: " + ip);
+    if (this._isValidAccessToken(accessToken)) {
+      response.send("Not implemented! Ip: " + ip);
+    }else{
+      response.sendStatus(401);
     }
 
   }
 
-  _isValidAccessToken(accessToken, config) {
-    return (config.accessToken && accessToken == config.accessToken);
+  _isValidAccessToken(accessToken) {
+    return (this.config.accessToken && accessToken == this.config.accessToken);
   }
 
-  runExpressApplication(expressApplication, config){
-    expressApplication.listen(config.port, () => {
-      console.log('Example app listening on port: ', config.port);
+  setupMiddlewares() {
+  }
+
+  runExpressApplication() {
+    this.expressApplication.listen(this.config.port, () => {
+      console.log('Example app listening on port: ', this.config.port);
     });
   }
-
 
 }
 
